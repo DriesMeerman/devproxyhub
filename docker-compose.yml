@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  nodejs:
+    image: node:latest
+    build: ../devproxyhub
+    # command: npm install && npm start
+    # restart: always
+    depends_on:
+      - redis
+    networks:
+      - proxyhub
+    environment:
+      - REDIS_HOST=redis
+      - CACHE_EXPIRATION_TIME=60
+      - CACHE_TIMEOUT=10
+    volumes:
+      - ./proxyhub:/usr/src/app
+    ports:
+      - "3000:3000"
+    working_dir: /usr/src/app
+    # command: ["npm", "install"]
+    # command: "npm install && npm start"
+    command: bash -c "npm install && npm start"
+  redis:
+    image: redis:latest
+    # restart: always
+    networks:
+      - proxyhub
+networks:
+  proxyhub:
+    driver: bridge
+    name: proxyhub
